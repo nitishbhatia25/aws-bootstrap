@@ -143,8 +143,7 @@ Resources:
               # Create a self-signed TLS certificate to communicate with the load balancer
               mkdir -p /home/ec2-user/app/keys
               cd /home/ec2-user/app/keys
-              openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \ 
-                          -subj "/C=/ST=/L=/O=/CN=localhost" -keyout key.pem -out cert.pem
+              openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=/ST=/L=/O=/CN=localhost" -keyout key.pem -out cert.pem
             EOF
 
             chown ec2-user:ec2-user /tmp/install_script.sh && chmod a+x /tmp/install_script.sh
@@ -287,20 +286,18 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
-
-    HTTPSLoadBalancerTargetGroup:
-      Type: AWS::ElasticLoadBalancingV2::TargetGroup
-      Properties:
-        TargetType: instance
-        Port: 8443
-        Protocol: HTTPS
-        VpcId: !Ref VPC
-        HealthCheckEnabled: true
-        HealthCheckProtocol: HTTPS
-        Tags:
-          - Key: Name
-            Value: !Ref AWS::StackName
-      
+  HTTPSLoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: instance
+      Port: 8443
+      Protocol: HTTPS
+      VpcId: !Ref VPC
+      HealthCheckEnabled: true
+      HealthCheckProtocol: HTTPS
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
   ScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     UpdatePolicy: 

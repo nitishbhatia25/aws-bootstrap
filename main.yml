@@ -182,7 +182,6 @@ Resources:
         Domain: !Ref Domain 
         SubDomain: stage
         Certificate: !Ref Certificate
-
   Prod:
     Type: AWS::CloudFormation::Stack
     DependsOn: Staging 
