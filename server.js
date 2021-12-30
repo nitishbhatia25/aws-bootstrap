@@ -21,14 +21,6 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
   server.listen(httpsPort, hostname, () => {
     console.log(`Server running at https://${hostname()}:${httpsPort}/`);
   });
+} else {
+  console.log('Certificate keys not found');
 }
-
-console.log('Starting http server') 
-const server = http.createServer((req, res) => { 
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end(message);
-});
-  server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname()}:${port}/`);
-});
