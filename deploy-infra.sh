@@ -59,6 +59,7 @@ aws cloudformation deploy \
   --no-fail-on-empty-changeset \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameter-overrides EC2InstanceType=$EC2_INSTANCE_TYPE \
+    EC2AMI='/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2' \
     GitHubOwner=$GH_OWNER \
     GitHubRepo=$GH_REPO \
     GitHubBranch=$GH_BRANCH \

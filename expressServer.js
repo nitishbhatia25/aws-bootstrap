@@ -25,9 +25,9 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
     const client = new Client({
       user: "postgres",
       password: "2rf7qawjWDVpIin12u7G",
-      host: "database-instance-2.c1cdckzqi1yl.us-east-2.rds.amazonaws.com",
+      host: "database-instance-1.c1cdckzqi1yl.us-east-2.rds.amazonaws.com",
       port: 5432,
-      database: "awsbootstrapproddb"
+      database: "awsbootstrapstagedb"
     });
     try {
       await client.connect();
