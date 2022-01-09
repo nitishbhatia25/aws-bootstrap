@@ -100,7 +100,8 @@ Resources:
         Monitoring:
           Enabled: true
         SecurityGroupIds:
-          - !GetAtt PrivateSecurityGroup.GroupId
+          - !ImportValue
+            'Fn::Sub': '${Env}-SecurityGroupId'
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash -xe
@@ -208,18 +209,6 @@ Resources:
         - Key: AZ
           Value: !Select [ 1, !GetAZs '' ]
 
-  EIPAZ1:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
-  EIPAZ2:
-    Type: AWS::EC2::EIP
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Domain: vpc
-
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -263,73 +252,6 @@ Resources:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref SubnetAZ2
 
-  PrivateSubnetRouteTableAZ1:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !ImportValue
-        'Fn::Sub': '${Env}VPC'
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
-        - Key: AZ
-          Value: !Select [ 0, !GetAZs '' ]
-
-  PrivateSubnetRouteTableAZ2:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !ImportValue
-        'Fn::Sub': '${Env}VPC'
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
-        - Key: AZ
-          Value: !Select [ 1, !GetAZs '' ]
-    
-  PrivateRouteAZ1:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateSubnetRouteTableAZ1
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NATGatewayAZ1
-
-  PrivateRouteAZ2:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateSubnetRouteTableAZ2
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NATGatewayAZ2
-
-  PrivateSubnetRouteTableAssociationAZ1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateSubnetRouteTableAZ1
-      SubnetId: !Ref PrivateSubnetAZ1
-
-  PrivateSubnetRouteTableAssociationAZ2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateSubnetRouteTableAZ2
-      SubnetId: !Ref PrivateSubnetAZ2
-  NATGatewayAZ1:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt EIPAZ1.AllocationId
-      SubnetId: !Ref SubnetAZ1
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
-        - Key: AZ
-          Value: !Select [ 0, !GetAZs '' ]
-  NATGatewayAZ2:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt EIPAZ2.AllocationId
-      SubnetId: !Ref SubnetAZ2
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
-        - Key: AZ
-          Value: !Select [ 1, !GetAZs '' ]
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -405,13 +327,13 @@ Resources:
             - "GroupMaxSize"
             - "GroupInServiceInstances"
       VPCZoneIdentifier:
-        - !Ref PrivateSubnetAZ1
-        - !Ref PrivateSubnetAZ2
+        - !Ref SubnetAZ1
+        - !Ref SubnetAZ2
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
           PropagateAtLaunch: "true"
-    DependsOn: [PrivateRouteAZ1, PrivateRouteAZ2]
+    DependsOn: [DefaultPublicRoute]
 
   DNS:
     Type: AWS::Route53::RecordSet
