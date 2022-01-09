@@ -13,33 +13,36 @@ Parameters:
   Certificate:
     Type: String
     Description: 'An existing ACM certificate ARN for subdomain.domain'
+  Env:
+    Type: String
 
 Resources:
-  SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp 
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp 
-          FromPort: 8443
-          ToPort: 8443
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
+  # SecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         FromPort: 22
+  #         ToPort: 22
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp 
+  #         FromPort: 443
+  #         ToPort: 443
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp 
+  #         FromPort: 8443
+  #         ToPort: 8443
+  #         CidrIp: 0.0.0.0/0
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
   PrivateSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -171,20 +174,21 @@ Resources:
             # Signal to CloudFormation that the instance is ready
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource ${!LOGICAL_ID}
 
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
+  # VPC:
+  #   Type: AWS::EC2::VPC
+  #   Properties:
+  #     CidrBlock: 10.0.0.0/16
+  #     EnableDnsSupport: true
+  #     EnableDnsHostnames: true
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
 
   SubnetAZ1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 0, !GetAZs '' ]  
       CidrBlock: 10.0.0.0/18
       MapPublicIpOnLaunch: true
@@ -196,7 +200,8 @@ Resources:
   PrivateSubnetAZ1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 0, !GetAZs '' ]  
       CidrBlock: 10.0.128.0/18
       MapPublicIpOnLaunch: false
@@ -209,7 +214,8 @@ Resources:
   SubnetAZ2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 1, !GetAZs '' ] 
       CidrBlock: 10.0.64.0/18
       MapPublicIpOnLaunch: true 
@@ -221,7 +227,8 @@ Resources:
   PrivateSubnetAZ2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 1, !GetAZs '' ] 
       CidrBlock: 10.0.192.0/18
       MapPublicIpOnLaunch: false 
@@ -254,12 +261,14 @@ Resources:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
 
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
@@ -287,7 +296,8 @@ Resources:
   PrivateSubnetRouteTableAZ1:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
@@ -297,7 +307,8 @@ Resources:
   PrivateSubnetRouteTableAZ2:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
@@ -355,7 +366,8 @@ Resources:
       Type: application
       Scheme: internet-facing
       SecurityGroups:
-        - !GetAtt SecurityGroup.GroupId
+        - !ImportValue
+          'Fn::Sub': '${Env}-SecurityGroupId'
       Subnets:
         - !Ref SubnetAZ1
         - !Ref SubnetAZ2
@@ -380,7 +392,8 @@ Resources:
       TargetType: instance
       Port: 8443
       Protocol: HTTPS
-      VpcId: !Ref VPC
+      VpcId: !ImportValue
+        'Fn::Sub': '${Env}VPC'
       HealthCheckEnabled: true
       HealthCheckProtocol: HTTPS
       Tags:

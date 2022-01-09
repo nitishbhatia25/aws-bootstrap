@@ -32,6 +32,16 @@ aws cloudformation deploy \
   --parameter-overrides CodePipelineBucket=$CODEPIPELINE_BUCKET \
     CloudFormationBucket=$CFN_BUCKET
 
+# Deploys db related resources
+echo -e "\n\n=========== Deploying db-setup.yml ==========="
+aws cloudformation deploy \
+  --region $REGION \
+  --profile $CLI_PROFILE \
+  --stack-name $STACK_NAME-db-setup \
+  --template-file db-setup.yml \
+  --no-fail-on-empty-changeset \
+  --capabilities CAPABILITY_NAMED_IAM
+
 # Package up CloudFormation templates into an S3 bucket
 echo -e "\n\n=========== Packaging main.yml ==========="
 mkdir -p ./cfn_output

@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  StagingVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+  # ProdVPC:
+  #   Type: AWS::EC2::VPC
+  #   Properties:
+  #     CidrBlock: 10.0.0.0/16
+  #     EnableDnsSupport: true
+  #     EnableDnsHostnames: true
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
+  StagingSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref StagingVPC
+      GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp 
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp 
+          FromPort: 8443
+          ToPort: 8443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+  # ProdSecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     VpcId: !Ref ProdVPC
+  #     GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         FromPort: 22
+  #         ToPort: 22
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp 
+  #         FromPort: 443
+  #         ToPort: 443
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp 
+  #         FromPort: 8443
+  #         ToPort: 8443
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp
+  #         FromPort: 5432
+  #         ToPort: 5432
+  #         CidrIp: 0.0.0.0/0
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
+  
+  # StagingDBSubnetGroup:
+  #   Type: AWS::RDS::DBSubnetGroup
+  #   Properties: 
+  #     DBSubnetGroupDescription: !Sub 'DB Subnet group for ${AWS::StackName}'
+  #     DBSubnetGroupName: db-subnet-group
+  #     SubnetIds: 
+  #       - !Ref PrivateDBSubnetAZ1
+  #       - !Ref PrivateDBSubnetAZ2
+  #     Tags: 
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
+  # PrivateDBSubnetAZ1:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     VpcId: !Ref StagingVPC
+  #     AvailabilityZone: !Select [ 0, !GetAZs '' ]  
+  #     CidrBlock: 10.0.192.0/19
+  #     MapPublicIpOnLaunch: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
+  #       - Key: AZ
+  #         Value: !Select [ 0, !GetAZs '' ]
+
+  # PrivateDBSubnetAZ2:
+  #   Type: AWS::EC2::Subnet
+  #   Properties:
+  #     VpcId: !Ref StagingVPC
+  #     AvailabilityZone: !Select [ 1, !GetAZs '' ] 
+  #     CidrBlock: 10.0.224.0/19
+  #     MapPublicIpOnLaunch: false 
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Ref AWS::StackName
+  #       - Key: AZ
+  #         Value: !Select [ 1, !GetAZs '' ]
+Outputs:
+  StagingVPC:
+    Description: Staging VPC
+    Value: !Ref StagingVPC
+    Export:
+      Name: StagingVPC
+  # ProdVPC:
+  #   Description: Prod VPC
+  #   Value: !Ref ProdVPC
+  StagingSecurityGroup:
+    Description: Staging SecurityGroup
+    Value: !GetAtt StagingSecurityGroup.GroupId
+    Export:
+      Name: Staging-SecurityGroupId
+  # ProdSecurityGroup:
+  #   Description: Prod SecurityGroup
+  #   Value: !Ref ProdSecurityGroup
