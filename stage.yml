@@ -17,27 +17,6 @@ Parameters:
     Type: String
 
 Resources:
-  # SecurityGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     VpcId: !Ref VPC
-  #     GroupDescription: !Sub 'Internal Security group for ${AWS::StackName}'
-  #     SecurityGroupIngress:
-  #       - IpProtocol: tcp
-  #         FromPort: 22
-  #         ToPort: 22
-  #         CidrIp: 0.0.0.0/0
-  #       - IpProtocol: tcp 
-  #         FromPort: 443
-  #         ToPort: 443
-  #         CidrIp: 0.0.0.0/0
-  #       - IpProtocol: tcp 
-  #         FromPort: 8443
-  #         ToPort: 8443
-  #         CidrIp: 0.0.0.0/0
-  #     Tags:
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
   PrivateSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -174,15 +153,6 @@ Resources:
             # Signal to CloudFormation that the instance is ready
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource ${!LOGICAL_ID}
 
-  # VPC:
-  #   Type: AWS::EC2::VPC
-  #   Properties:
-  #     CidrBlock: 10.0.0.0/16
-  #     EnableDnsSupport: true
-  #     EnableDnsHostnames: true
-  #     Tags:
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
 
   SubnetAZ1:
     Type: AWS::EC2::Subnet
