@@ -70,42 +70,42 @@ Resources:
   #       - Key: Name
   #         Value: !Ref AWS::StackName
   
-  # StagingDBSubnetGroup:
-  #   Type: AWS::RDS::DBSubnetGroup
-  #   Properties: 
-  #     DBSubnetGroupDescription: !Sub 'DB Subnet group for ${AWS::StackName}'
-  #     DBSubnetGroupName: db-subnet-group
-  #     SubnetIds: 
-  #       - !Ref PrivateDBSubnetAZ1
-  #       - !Ref PrivateDBSubnetAZ2
-  #     Tags: 
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
-  # PrivateDBSubnetAZ1:
-  #   Type: AWS::EC2::Subnet
-  #   Properties:
-  #     VpcId: !Ref StagingVPC
-  #     AvailabilityZone: !Select [ 0, !GetAZs '' ]  
-  #     CidrBlock: 10.0.192.0/19
-  #     MapPublicIpOnLaunch: false
-  #     Tags:
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
-  #       - Key: AZ
-  #         Value: !Select [ 0, !GetAZs '' ]
+  StagingDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: !Sub 'DB Subnet group for ${AWS::StackName}'
+      DBSubnetGroupName: db-subnet-group
+      SubnetIds: 
+        - !Ref PrivateDBSubnetAZ1
+        - !Ref PrivateDBSubnetAZ2
+      Tags: 
+        - Key: Name
+          Value: !Ref AWS::StackName
+  PrivateDBSubnetAZ1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref StagingVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]  
+      CidrBlock: 10.0.192.0/19
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: AZ
+          Value: !Select [ 0, !GetAZs '' ]
 
-  # PrivateDBSubnetAZ2:
-  #   Type: AWS::EC2::Subnet
-  #   Properties:
-  #     VpcId: !Ref StagingVPC
-  #     AvailabilityZone: !Select [ 1, !GetAZs '' ] 
-  #     CidrBlock: 10.0.224.0/19
-  #     MapPublicIpOnLaunch: false 
-  #     Tags:
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
-  #       - Key: AZ
-  #         Value: !Select [ 1, !GetAZs '' ]
+  PrivateDBSubnetAZ2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref StagingVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ] 
+      CidrBlock: 10.0.224.0/19
+      MapPublicIpOnLaunch: false 
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: AZ
+          Value: !Select [ 1, !GetAZs '' ]
 Outputs:
   StagingVPC:
     Description: Staging VPC

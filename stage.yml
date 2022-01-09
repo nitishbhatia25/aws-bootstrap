@@ -203,7 +203,7 @@ Resources:
       VpcId: !ImportValue
         'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 0, !GetAZs '' ]  
-      CidrBlock: 10.0.128.0/18
+      CidrBlock: 10.0.128.0/19
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -230,7 +230,7 @@ Resources:
       VpcId: !ImportValue
         'Fn::Sub': '${Env}VPC'
       AvailabilityZone: !Select [ 1, !GetAZs '' ] 
-      CidrBlock: 10.0.192.0/18
+      CidrBlock: 10.0.160.0/19
       MapPublicIpOnLaunch: false 
       Tags:
         - Key: Name
@@ -374,6 +374,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
+    DependsOn: InternetGateway
 
   HTTPSLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
