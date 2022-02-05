@@ -4,11 +4,7 @@ const https = require('https');
 const fs = require('fs');
 const { Client } = require('pg');
 const express = require('express');
-const AWS = require('aws-sdk');
-
 const app = express();
-// Create S3 service object
-let s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 const STACK_NAME = process.env.STACK_NAME || "Unknown Stack";
 const message = `Jai Jai Ram from ${hostname()} in ${STACK_NAME}\n`;
@@ -21,22 +17,18 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
   console.log('Starting https server')
   const options = { key: fs.readFileSync(httpsKey), cert: fs.readFileSync(httpsCert) };
   app.get('/', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    s3.listBuckets(function(err, data) {
-      if (err) {
-        res.statusCode = 500;
-        res.end(JSON.stringify(err));
-      } else {
-        res.statusCode = 200;
-        res.end(JSON.stringify(data.Buckets));
-      }
-    });
-    // res.end(message);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end(message);
   });
   app.get('/db', async (req, res) => {
-    const dbConfigString = await fetchS3Object('config-805402123321', 'db.json');
-    const dbConfig = JSON.parse(dbConfigString);
-    const client = new Client(dbConfig);
+    const client = new Client({
+      user: "postgres",
+      password: "2rf7qawjWDVpIin12u7G",
+      host: "database-instance-1.c1cdckzqi1yl.us-east-2.rds.amazonaws.com",
+      port: 5432,
+      database: "awsbootstrapstagedb"
+    });
     try {
       await client.connect();
       console.log("Connection succesful");
@@ -54,21 +46,4 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
   });
 } else {
   console.log('Certificate keys not found');
-}
-
-function fetchS3Object(bucketName, key) {
-  const options = {
-    Bucket: bucketName,
-    Key: key,
-  };
-  return new Promise((resolve, reject) => {
-    s3.getObject(options, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        const { Body } = data;
-        resolve(Body.toString('utf-8'));
-      }
-    })
-  });
 }
