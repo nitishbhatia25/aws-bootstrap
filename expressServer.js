@@ -21,17 +21,9 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
   console.log('Starting https server')
   const options = { key: fs.readFileSync(httpsKey), cert: fs.readFileSync(httpsCert) };
   app.get('/', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    s3.listBuckets(function(err, data) {
-      if (err) {
-        res.statusCode = 500;
-        res.end(JSON.stringify(err));
-      } else {
-        res.statusCode = 200;
-        res.end(JSON.stringify(data.Buckets));
-      }
-    });
-    // res.end(message);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end(message);
   });
   app.get('/db', async (req, res) => {
     const dbConfigString = await fetchS3Object('config-805402123321', 'db.json');
@@ -47,6 +39,18 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
       await client.end();
       console.log("Connection closed");
     }
+  });
+  app.get('/buckets', async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    s3.listBuckets(function(err, data) {
+      if (err) {
+        res.statusCode = 500;
+        res.end(JSON.stringify(err));
+      } else {
+        res.statusCode = 200;
+        res.end(JSON.stringify(data.Buckets));
+      }
+    });
   });
   const server = https.createServer(options, app);
   server.listen(httpsPort, hostname, () => {
