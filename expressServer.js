@@ -85,18 +85,22 @@
   }
 
   async function applyLiquibaseChanges(dbConfig) {
-    // Execute liquibase command after connecting
-    const liquibaseConfigLocalDb = {
-      changeLogFile: 'db/changelog/changelog.yaml',
-      classpath: POSTGRESQL_DEFAULT_CONFIG.classpath,
-      url: `jdbc:postgresql://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`,
-      username: dbConfig.user,
-      password: dbConfig.password,
-    };
-    const liquibaseInstance = new Liquibase(liquibaseConfigLocalDb);
+    try {
+      // Execute liquibase command after connecting
+      const liquibaseConfigLocalDb = {
+        changeLogFile: 'db/changelog/changelog.yaml',
+        classpath: POSTGRESQL_DEFAULT_CONFIG.classpath,
+        url: `jdbc:postgresql://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`,
+        username: dbConfig.user,
+        password: dbConfig.password,
+      };
+      const liquibaseInstance = new Liquibase(liquibaseConfigLocalDb);
       let status = await liquibaseInstance.status();
       await liquibaseInstance.updateSQL();
       // await liquibaseInstance.update();
       console.log(`liquibase status: ${status}`);
+    } catch (e) {
+      console.error("Error in applying liquibase changes:", e);
+    }
   }
 })();
