@@ -97,7 +97,7 @@
       const liquibaseInstance = new Liquibase(liquibaseConfigLocalDb);
       let status = await liquibaseInstance.status();
       await liquibaseInstance.updateSQL();
-      // await liquibaseInstance.update();
+      await liquibaseInstance.update();
       console.log(`liquibase status: ${status}`);
     } catch (e) {
       console.error("Error in applying liquibase changes:", e);
