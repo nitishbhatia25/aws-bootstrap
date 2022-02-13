@@ -117,6 +117,9 @@ Resources:
             # install jq
             yum -y install jq
 
+            # install java needed by liquibase package for db schema updates
+            yum -y install java-1.8.0-openjdk-devel
+
             cat > /tmp/install_script.sh << EOF
               # START
               echo "Setting up NodeJS Environment"
