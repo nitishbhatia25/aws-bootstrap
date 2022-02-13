@@ -11,6 +11,7 @@
   "dependencies": {
     "aws-sdk": "^2.1069.0",
     "express": "^4.17.2",
+    "liquibase": "^4.4.0",
     "pg": "^8.7.1",
     "pm2": "^4.2.0"
   }

@@ -19,6 +19,11 @@ const httpsKey = '../keys/key.pem';
 const httpsCert = '../keys/cert.pem';
 if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) { 
   console.log('Starting https server')
+  console.log('Fetching db config from s3');
+  const dbConfigString = await fetchS3Object('config-805402123321', 'db.json');
+  const dbConfig = JSON.parse(dbConfigString);
+  console.log('Applying liquibase changes to DB');
+  await applyLiquibaseChanges(dbConfig);
   const options = { key: fs.readFileSync(httpsKey), cert: fs.readFileSync(httpsCert) };
   app.get('/', (req, res) => {
     res.statusCode = 200;
@@ -26,8 +31,8 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
     res.end(message);
   });
   app.get('/db', async (req, res) => {
-    const dbConfigString = await fetchS3Object('config-805402123321', 'db.json');
-    const dbConfig = JSON.parse(dbConfigString);
+    // const dbConfigString = await fetchS3Object('config-805402123321', 'db.json');
+    // const dbConfig = JSON.parse(dbConfigString);
     const client = new Client(dbConfig);
     try {
       await client.connect();
@@ -75,4 +80,20 @@ function fetchS3Object(bucketName, key) {
       }
     })
   });
+}
+
+async function applyLiquibaseChanges(dbConfig) {
+  // Execute liquibase command after connecting
+  const liquibaseConfigLocalDb = {
+    changeLogFile: 'db/changelog/changelog.yaml',
+    classpath: POSTGRESQL_DEFAULT_CONFIG.classpath,
+    url: `jdbc:postgresql://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`,
+    username: dbConfig.user,
+    password: dbConfig.password,
+  };
+  const liquibaseInstance = new Liquibase(liquibaseConfigLocalDb);
+    let status = await liquibaseInstance.status();
+    await liquibaseInstance.updateSQL();
+    // await liquibaseInstance.update();
+    console.log(`liquibase status: ${status}`);
 }
