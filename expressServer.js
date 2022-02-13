@@ -6,6 +6,7 @@
   const { Client } = require('pg');
   const express = require('express');
   const AWS = require('aws-sdk');
+  const { Liquibase, POSTGRESQL_DEFAULT_CONFIG } = require('liquibase');
 
   const app = express();
   // Create S3 service object
