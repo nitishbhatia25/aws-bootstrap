@@ -22,10 +22,13 @@ const https = require('https');
  * Create HTTP server.
  */
  if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
+  console.log('Starting https server')
+  const options = { key: fs.readFileSync(httpsKey), cert: fs.readFileSync(httpsCert) };
   port = normalizePort(process.env.PORT || '8443');
   app.set('port', port);
-  server = https.createServer(app);
+  server = https.createServer(options, app);
  } else {
+  console.log('Starting http server')
   port = normalizePort(process.env.PORT || '3000');
   app.set('port', port);
   server = http.createServer(app);
