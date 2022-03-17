@@ -21,3 +21,4 @@ artifacts:
     - appspec.yml
     - 'node_modules/**/*'
     - 'db/**/*'
+    - 'expressApp/**/*'
