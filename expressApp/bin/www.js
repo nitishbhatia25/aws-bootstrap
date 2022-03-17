@@ -14,8 +14,8 @@ const https = require('https');
  * Get port from environment and store in Express.
  */
  // using self signed certificate in ec2 instance generated at the time of launching ec2 instance from deployment script
- const httpsKey = '../../../keys/key.pem';
- const httpsCert = '../../../keys/cert.pem';
+ const httpsKey = '../keys/key.pem';
+ const httpsCert = '../keys/cert.pem';
  var port;
  var server;
  /**
