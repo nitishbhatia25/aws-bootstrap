@@ -7,19 +7,29 @@
 var app = require('../app');
 var debug = require('debug')('expressapp:server');
 var http = require('http');
+const fs = require('fs');
+const https = require('https');
 
 /**
  * Get port from environment and store in Express.
  */
-
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-/**
+ // using self signed certificate in ec2 instance generated at the time of launching ec2 instance from deployment script
+ const httpsKey = '../../../keys/key.pem';
+ const httpsCert = '../../../keys/cert.pem';
+ var port;
+ var server;
+ /**
  * Create HTTP server.
  */
-
-var server = http.createServer(app);
+ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
+  port = normalizePort(process.env.PORT || '8443');
+  app.set('port', port);
+  server = https.createServer(app);
+ } else {
+  port = normalizePort(process.env.PORT || '3000');
+  app.set('port', port);
+  server = http.createServer(app);
+ }
 
 /**
  * Listen on provided port, on all network interfaces.
