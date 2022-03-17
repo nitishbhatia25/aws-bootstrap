@@ -4,7 +4,7 @@
   "description": "",
   "main": "expressServer.js",
   "scripts": {
-    "start": "node ./node_modules/pm2/bin/pm2 start ./expressServer.js --name hello_aws --log ../logs/app.log --update-env -- --STACK_NAME ${STACK_NAME}",
+    "start": "node ./node_modules/pm2/bin/pm2 start ./expressApp/bin/www --name hello_aws --log ../logs/app.log --update-env -- --STACK_NAME ${STACK_NAME}",
     "stop": "node ./node_modules/pm2/bin/pm2 stop hello_aws",
     "build": "echo 'Building...'"
   },
