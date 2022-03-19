@@ -16,7 +16,6 @@ async function getDb() {
     throw e;
   }
 }
-// Call it immediately to start fetch config from s3
 
 async function applyLiquibaseChanges(dbConfig) {
   try {
