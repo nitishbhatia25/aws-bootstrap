@@ -1,7 +1,7 @@
 // Loading and initializing the library with default configs
 const pgp = require('pg-promise')();
 const s3 = require('./s3');
-const { Liquibase, POSTGRESQL_DEFAULT_CONFIG } = require('liquibase');
+const { Liquibase, POSTGRESQL_DEFAULT_CONFIG, LiquibaseLogLevels } = require('liquibase');
 
 let db, dbConfig;
 async function getDb() {
@@ -30,6 +30,7 @@ async function applyLiquibaseChanges(dbConfig) {
       url: `jdbc:postgresql://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`,
       username: dbConfig.user,
       password: dbConfig.password,
+      logLevel: LiquibaseLogLevels.Off
     };
     const liquibaseInstance = new Liquibase(liquibaseConfigLocalDb);
     let status = await liquibaseInstance.status();
