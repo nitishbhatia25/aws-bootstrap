@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+process.env.AWS_PROFILE='awsbootstrap';
 var app = require('../app');
 var debug = require('debug')('expressapp:server');
 var http = require('http');

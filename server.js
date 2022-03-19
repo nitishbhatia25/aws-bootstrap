@@ -63,9 +63,6 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
     // executeDbQueries().then((response) => res.json(response));
     res.json(data);
   })
-  server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname()}:${port}/`);
-  });
   app.listen(port, () => {
     console.log(`Server running at http://${hostname()}:${port}/`);
   })

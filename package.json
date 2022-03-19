@@ -9,14 +9,15 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1069.0",
-    "express": "^4.17.3",
-    "liquibase": "^4.4.0",
-    "pg": "^8.7.1",
-    "pm2": "^4.2.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "express": "^4.17.3",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "liquibase": "^4.4.0",
+    "morgan": "~1.9.1",
+    "pg": "^8.7.1",
+    "pg-promise": "^10.11.1",
+    "pm2": "^4.2.0"
   }
 }
